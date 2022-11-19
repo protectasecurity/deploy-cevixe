@@ -14,5 +14,9 @@ runs:
         name: dist
         path: dist
 
+    - name: Review Artifact
+      run: ls -laR dist
+      shell: bash
+
     - name: Deploy Project
       uses: cevixe/deploy@v1
