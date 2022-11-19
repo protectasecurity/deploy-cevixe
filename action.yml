@@ -12,10 +12,15 @@ runs:
       uses: actions/download-artifact@v3
       with:
         name: dist
-        path: dist
+        path: .
+
+    - name: Uncompress Artifact
+      run: |
+        tar -xzvf dist.tar.gz
+      shell: bash
 
     - name: Review Artifact
-      run: ls -laR dist
+      run: ls -laR .
       shell: bash
 
     - name: Deploy Project
