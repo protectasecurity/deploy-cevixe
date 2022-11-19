@@ -19,9 +19,5 @@ runs:
         tar -xzvf dist.tar.gz
       shell: bash
 
-    - name: Review Artifact
-      run: ls -laR .
-      shell: bash
-
     - name: Deploy Project
       uses: cevixe/deploy@v1
