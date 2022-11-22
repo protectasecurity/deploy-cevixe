@@ -2,11 +2,23 @@ name: 'Build Deploy GitHub Actions'
 branding:
   icon: 'terminal'
   color: 'orange'
+inputs:
+  context:
+    description: 'Application context'
+    required: false
 runs:
   using: 'composite'
   steps:
     - name: Checkout
       uses: actions/checkout@v3
+
+    - name: Setup NodeJS
+      uses: actions/setup-node@v3
+
+    - name: Setup Apollo
+      run: |
+        npm install -g @apollo/rover  
+      shell: bash
 
     - name: Download Artifact
       uses: actions/download-artifact@v3
@@ -21,3 +33,48 @@ runs:
 
     - name: Deploy Project
       uses: cevixe/deploy@v1
+
+    - name: Deploy Schema 
+      run: |
+        IFS="/"
+        read -a nameSections <<< ${{ github.repository }}
+        organization="${nameSections[0]}"
+        project="${nameSections[1]}"
+
+        ref=${{ github.ref_name }}
+        case $ref in
+          main)
+            env="prd"
+            ;;
+          staging)
+            env="stg"
+            ;;
+          testing)
+            env="qas"
+            ;;
+          *)
+            env="dev"
+            ;;
+        esac
+
+        IFS="-"
+        read -a nameItems <<< $project
+        app="${nameItems[0]}"
+        type="${nameItems[2]}"
+        domain="${nameItems[3]}"
+        context=${{ inputs.context }}
+
+        if [ "${type}" == "cvxdom" ];then
+          if [ "${context}" == "" ];then
+            rover subgraph publish ${organization}-${app}@${env} \
+              --schema "api/schema.gql" \
+              --name ${domain}-subgraph \
+              --routing-url "https://${domain}.${app}.${env}.protectasecuritycloud.pe/graphql"
+          else
+            rover subgraph publish ${organization}-${app}@${env} \
+              --schema "api/schema.gql" \
+              --name ${domain}-subgraph \
+              --routing-url "https://${domain}.${app}.${context}.${env}.protectasecuritycloud.pe/graphql"
+          fi
+        fi
+      shell: bash

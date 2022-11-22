@@ -13,6 +13,7 @@ jobs:
     steps:
       - uses: protectasecurity/deploy-cevixe@v1
         env:
+          APOLLO_KEY: ${{ secrets.APOLLO_KEY }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           AWS_DEFAULT_REGION: 'us-east-1'
@@ -20,6 +21,7 @@ jobs:
 
 ## Environment
 
+- `APOLLO_KEY` **Optional**
 - `AWS_ACCESS_KEY_ID` **Required**
 - `AWS_SECRET_ACCESS_KEY` **Required**
 - `AWS_DEFAULT_REGION` **Required**
